@@ -14,11 +14,17 @@ from sklearn.manifold import TSNE
 global_hour = -1
 
 def get_month(time):
-    dt = datetime.datetime.strptime(time, '%m/%d/%Y %I:%M:%S %p')
+    try:
+        dt = datetime.datetime.strptime(time, '%m/%d/%Y %I:%M:%S %p')
+    except:
+        dt = datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S')
     return dt.month
 
 def get_hour(time):
-    dt = datetime.datetime.strptime(time, '%m/%d/%Y %I:%M:%S %p')
+    try:
+        dt = datetime.datetime.strptime(time, '%m/%d/%Y %I:%M:%S %p')
+    except:
+        dt = datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S')
     return dt.hour
 
 def get_one_hot(ds):
@@ -65,21 +71,34 @@ def tsne(feats, n_samples):
     
     return results, indices
 
-@st.cache
+@st.cache(suppress_st_warning=True)
 def read_data(year, mode='offline'):
     if mode == 'offline':
         try:
             csv_cache = st.cache(pd.read_csv)
             results = csv_cache('Crimes.csv')
+            return results[results.loc[:,'Year']==year]
         except: # For testing
+            st.write('Incomplete Data Readed, Only for testing')
             client = Socrata("data.cityofchicago.org", None)
-            results = client.get("ijzp-q8t2", where="year={:d}".format(year), limit=50000)
+            results = client.get("ijzp-q8t2", where="year={:d}".format(year), limit=5000)
             results = pd.DataFrame.from_records(results)
+            results.columns = ['ID', 'Case Number', 'Date', 'Block', 'IUCR', 'Primary Type',
+                               'Description', 'Location Description', 'Arrest', 'Domestic', 'Beat',
+                               'District', 'Ward', 'Community Area', 'FBI Code', 'X Coordinate',
+                               'Y Coordinate', 'Year', 'Updated On', 'Latitude', 'Longitude',
+                               'Location']
+            return results[results.loc[:,'Year']==str(year)]
     else:
         client = Socrata("data.cityofchicago.org", None)
         results = client.get_all("ijzp-q8t2", where="year={:d}".format(year))
         results = pd.DataFrame.from_records(results)
-    return results[results.loc[:,'Year']==year]
+        results.columns = ['ID', 'Case Number', 'Date', 'Block', 'IUCR', 'Primary Type',
+            'Description', 'Location Description', 'Arrest', 'Domestic', 'Beat',
+            'District', 'Ward', 'Community Area', 'FBI Code', 'X Coordinate',
+            'Y Coordinate', 'Year', 'Updated On', 'Latitude', 'Longitude',
+            'Location']
+        return results[results.loc[:,'Year']==str(year)]
 
 @st.cache
 def add_extra_columns(selected_data):
@@ -144,37 +163,65 @@ def visualize_ml(selected_data):
 def visualize_chart(selected_data):
     st.header("Chart Visualization")
     
-    global global_hour
-    if global_hour != -1:
-        selected_data = selected_data[selected_data.loc[:, 'Hour']==global_hour]
-    crime_list = list(selected_data.loc[:,'Primary Type'].unique())
-    target_list = ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NARCOTICS', 'ASSAULT', 'OTHER']
-    chart_list = []
-    for crime in target_list:
-        if crime in crime_list:
-            crime_data = selected_data[selected_data.loc[:,'Primary Type']==crime].groupby(['Location Description']).count()
-            crime_data = crime_data.sort_values(['Case Number'], ascending=True).reset_index()
-            crime_data = crime_data.iloc[-7:,:]
-            chart = alt.Chart(crime_data).mark_bar().encode(x='Location Description:N',
-                                                          y='sum(Case Number):Q',
-                                                          color=alt.Color('Location Description:N')).properties(
-                                                                                                title="Location Distribution of {:s}".format(crime)
-                                                                                            )
-            chart_list.append(chart)
-        elif crime == 'OTHER' and len(crime_list)>=6:
-            crime_data = selected_data[selected_data.loc[:,'Primary Type'].apply(lambda x:x not in target_list)].groupby(['Location Description']).count()
-            crime_data = crime_data.sort_values(['Case Number'], ascending=True).reset_index()
-            crime_data = crime_data.iloc[-7:,:]
-            chart = alt.Chart(crime_data).mark_bar().encode(x='Location Description:N',
-                                                          y='sum(Case Number):Q',
-                                                          color=alt.Color('Location Description:N')).properties(
-                                                                                                title="Location Distribution of {:s}".format(crime)
-                                                                                            )
-            chart_list.append(chart)
-    for i in range(len(chart_list)//3+1):
-        chart_sub = alt.hconcat(*chart_list[i*3:i*3+3])
-        st.altair_chart(chart_sub)
-    pass
+    selector_type = alt.selection_single(empty='all', fields=['Primary Type'])
+    selector_loc = alt.selection_single(empty='all', fields=['Location Description'])
+    brush = alt.selection(type='interval')
+    base = alt.Chart(selected_data).properties(
+            width=300,
+            height=300
+        )
+    
+    points = base.mark_bar(filled=True).encode(
+            x=alt.X('Primary Type:N', sort=alt.EncodingSortField(field="Case Number", op="count", order='descending'),),
+            y=alt.Y('count(Case Number):Q'),
+            color=alt.condition(selector_type,
+                                'Primary Type:N',
+                                alt.value('lightgray')),
+            ).properties(
+                    title="Total Crime Numbers",
+            ).add_selection(
+                selector_type
+            ).transform_filter(
+                selector_loc
+            ).transform_filter(
+                brush
+            )
+    
+    chart_main = base.mark_area(filled=False).encode(x='Hour:N',
+                                         y='count(Case Number):Q',
+                                         color=alt.Color('Primary Type:N')).properties(
+                                             title="Hourly Trend of Crime Types",
+                                             ).add_selection(
+                                                 brush
+                                             ).transform_filter(
+                                                 selector_loc
+                                             ).transform_filter(
+                                                 selector_type
+                                             )
+    two_chart = points|chart_main
+    chart_location = base.mark_bar(filled=True).encode(
+                x=alt.X(
+                    'Location Description:N',
+                    sort=alt.EncodingSortField(field="Case Number", op="count", order='descending'),
+                ),
+                y=alt.Y('count(Case Number):Q'),
+                color=alt.condition(
+                    selector_loc,
+                    'Location Description:N',
+                    alt.value('lightgray')
+                ),
+            ).properties(
+                title="Location Distribution",
+                width=800,
+                height=400
+            ).add_selection(
+                selector_loc
+            ).transform_filter(
+                brush # good here
+            ).transform_filter(
+                selector_type
+            )
+    st.altair_chart(alt.vconcat(two_chart, chart_location))
 
 def visualize_map(data):
     st.header("Map Visualization")
@@ -218,23 +265,23 @@ def visualize_map(data):
                     target_list = ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NARCOTICS', 'ASSAULT']
                     crime_data = selected_data[selected_data.loc[:,'Primary Type'].apply(lambda x:x not in target_list)]
                 layer = pdk.Layer(
-                    'ScatterplotLayer',     # Change the `type` positional argument here
+                    'ScatterplotLayer',    
                     data=crime_data,
                     get_position='[Longitude, Latitude]',
                     auto_highlight=True,
-                    get_radius=100,          # Radius is given in meters
+                    get_radius=100,
                     get_fill_color=[125+25*i, 250-50*i, 50*i],
                     pickable=True)
                 layers.append(layer)
                 i += 1
         else:
             layer = pdk.Layer(
-                'ScatterplotLayer',     # Change the `type` positional argument here
+                'ScatterplotLayer',
                 data=selected_data,
                 get_position='[Longitude, Latitude]',
                 auto_highlight=True,
-                get_radius=100,          # Radius is given in meters
-                get_fill_color=[180, 0, 200, 140],  # Set an RGBA value for fill
+                get_radius=100,
+                get_fill_color=[180, 0, 200, 140],
                 pickable=True)
             layers.append(layer)
     if 'HeatMap' in options:
@@ -288,20 +335,7 @@ def main_chicago():
     selected_data = selected_data.reset_index().iloc[:,1:]
     st.subheader('Selected Data')
     st.write(selected_data)
-    get_one_hot(selected_data.loc[:,'Primary Type'])
-    hour_crime = selected_data.groupby(['Hour','Primary Type']).count().reset_index()
-    brush = alt.selection(type='interval')
-    chart_main = alt.Chart(hour_crime).mark_area().encode(x='Hour:N',
-                                                      y='sum(Case Number):Q',
-                                                      color=alt.Color('Primary Type:N')).properties(
-                                                                                            title="Hourly Trend of Crime Types",
-                                                                                            width=850,
-                                                                                            height=450
-                                                                                        ).add_selection(
-                                                                                            brush
-                                                                                        )
-    st.altair_chart(chart_main)
-    visualization_type = st.multiselect('Select the way you want to explore the data', ['Visualize In A Map', 'Explore In Charts', 'Machine Learning'], default=['Machine Learning'])
+    visualization_type = st.multiselect('Select the way you want to explore the data', ['Visualize In A Map', 'Explore In Charts', 'Machine Learning'], default=['Explore In Charts'])
     if 'Visualize In A Map' in visualization_type:
         visualize_map(selected_data)
     if 'Explore In Charts' in visualization_type:
