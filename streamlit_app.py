@@ -242,7 +242,7 @@ def visualize_chart(selected_data):
             color='Primary Type:N',
             tooltip=['Date', 'Block', 'Primary Type', 'Description', 'Location Description']
         ).properties(
-                title="Geography Distribution",
+                title="Geography Distribution (Details given in Points)",
                 width=700,
                 height=400
         ).transform_filter(
@@ -258,8 +258,8 @@ def visualize_chart(selected_data):
 
 def visualize_map(data, crime_list = ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NARCOTICS', 'ASSAULT', 'OTHER']):
     st.header("Map Visualization")
-    options = st.multiselect("Map Visualization", ['HeatMap', 'ScatterPlot', 'Hexagon'], default=['ScatterPlot', 'Hexagon'])
-    view_in_hour = st.checkbox("View Single Hour")
+    options = st.multiselect("Visualization Type", ['HeatMap', 'ScatterPlot', 'Hexagon'], default=['ScatterPlot', 'Hexagon'])
+    view_in_hour = st.checkbox("View In Single Hour")
     global global_hour
     if view_in_hour:
         hour = st.slider('Select specific hour', 0, 23, value=0, step=1)
@@ -331,7 +331,7 @@ def visualize_map(data, crime_list = ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NAR
 
 def main_chicago():
     
-    st.title("Chicago Crime Analysis")
+    st.title("Exploring the Pattern of Chicago Crimes")
     
     #General data selection and preprocessing
     st.sidebar.title("General Settings")
