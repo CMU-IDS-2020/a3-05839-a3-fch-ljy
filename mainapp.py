@@ -139,6 +139,9 @@ def preprocess_data(data):
     
 def visualize_ml(selected_data):
     labels, feats = preprocess_data(selected_data)
+    
+    st.write(pd.DataFrame(feats))
+    
     algorithms = {'PCA': pca,
                   'KPCA': kpca,
                   't-SNE': tsne}
@@ -307,8 +310,7 @@ def main_chicago():
     st.sidebar.title("General Settings")
     year = st.sidebar.slider('Year', 2001, 2020, value=2020)
     num_of_samples = st.sidebar.slider('Total Case Number', 2000, 100000, value=10000, step=2000)
-    data_cache = st.cache(read_data)
-    results = data_cache(year)
+    results = read_data(year)
     selected_data = random_select(results, num_of_samples)
     selected_data = add_extra_columns(selected_data)
     

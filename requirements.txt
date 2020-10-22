@@ -1,8 +1,7 @@
 streamlit
 pandas
 altair
-torch
-torchvision
-pytorch-lightning-bolts
 umap-learn
 scikit-learn
+tensorflow
+keras
