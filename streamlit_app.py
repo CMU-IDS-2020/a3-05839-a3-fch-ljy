@@ -260,6 +260,16 @@ def visualize_chart(selected_data):
 
 def visualize_map(data, crime_list = ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NARCOTICS', 'ASSAULT', 'OTHER']):
     st.header("Map Visualization")
+    help_selected = st.checkbox('help')
+    if help_selected:
+        st.markdown('''
+                    ----------------------------------------------------------------------------------
+                    In this part, you can explore the distribution of the crimes in a real world map.
+                    In specifc, you might want to view the crime distributions in each single hour, or you might view the distribution of each kind of crime separately.
+                    Here we provide Heatmap, ScatterPlot, and Hexagon to help visualize the distribution of crimes.
+                    You can zoom in/out to view the map in different detail level.
+                    ----------------------------------------------------------------------------------
+                    ''')
     options = st.multiselect("Visualization Type", ['HeatMap', 'ScatterPlot', 'Hexagon'], default=['ScatterPlot', 'Hexagon'])
     view_in_hour = st.checkbox("View In Single Hour")
     global global_hour
