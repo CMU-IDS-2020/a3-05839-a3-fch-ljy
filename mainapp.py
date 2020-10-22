@@ -17,14 +17,14 @@ def get_month(time):
     try:
         dt = datetime.datetime.strptime(time, '%m/%d/%Y %I:%M:%S %p')
     except:
-        dt = datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S')
+        dt = datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.000')
     return dt.month
 
 def get_hour(time):
     try:
         dt = datetime.datetime.strptime(time, '%m/%d/%Y %I:%M:%S %p')
     except:
-        dt = datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S')
+        dt = datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.000')
     return dt.hour
 
 def get_one_hot(ds):
@@ -81,7 +81,7 @@ def read_data(year, mode='offline'):
         except: # For testing
             st.write('Incomplete Data Readed, Only for testing')
             client = Socrata("data.cityofchicago.org", None)
-            results = client.get("ijzp-q8t2", where="year={:d}".format(year), limit=5000)
+            results = client.get("ijzp-q8t2", where="year={:d}".format(year), limit=100000)
             results = pd.DataFrame.from_records(results)
             results.columns = ['ID', 'Case Number', 'Date', 'Block', 'IUCR', 'Primary Type',
                                'Description', 'Location Description', 'Arrest', 'Domestic', 'Beat',
@@ -126,7 +126,10 @@ def preprocess_data(data):
         if one_hot[i]:
             obj = get_one_hot(data.loc[:,var_name])
         else:
-            obj = data.loc[:,var_name]
+            if var_name != 'Primary Type':
+                obj = data.loc[:,var_name].astype(np.float)
+            else:
+                obj = data.loc[:,var_name]
         if var_name in ['Latitude', 'Longitude']:
             obj = (obj-obj.mean())/obj.std()
         object_list.append(obj)
