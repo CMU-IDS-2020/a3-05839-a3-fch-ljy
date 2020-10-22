@@ -2,7 +2,7 @@
 
 ![A screenshot of your application. Could be a GIF.](main.png)
 
-In this project, we would like to explore the pattens of criminal actions happening in Chicago through visualization methods.
+In this project, we would like to explore the pattens of criminal actions happening in Chicago through visualization methods. The dataset we use here is the Chicago Crime Dataset, and this dataset contains information about the crimes happened in Chicago in the past 20 years. In specific, we will focus on the data in 2020.
 
 ## Project Goals
 
