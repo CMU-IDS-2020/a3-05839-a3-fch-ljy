@@ -383,4 +383,6 @@ def main_chicago():
         visualize_chart(selected_data)
     if 'Machine Learning' in visualization_type:
         visualize_ml(selected_data)
-main_chicago()
+        
+if __name__ == '__main__':
+    main_chicago()
