@@ -11,6 +11,7 @@ from sodapy import Socrata
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.manifold import TSNE
 
+
 global_hour = -1
 
 def get_month(time):
@@ -335,6 +336,8 @@ def main_chicago():
     #General data selection and preprocessing
     st.sidebar.title("General Settings")
     year = st.sidebar.slider('Year', 2001, 2020, value=2020)
+    st.sidebar.write("Year Value Will Be Fixed Here (2020)")
+    year = 2020
     num_of_samples = st.sidebar.slider('Total Case Number', 2000, 100000, value=10000, step=2000)
     data_cache = st.cache(read_data)
     results = data_cache(year, 'online')
