@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.manifold import TSNE
+from umap import UMAP
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -61,7 +62,39 @@ def tsne(feats, n_samples):
 
 
 def umap(feats, n_samples):
-    pass
+    metric = st.selectbox('Metric', [
+        'euclidean',
+        'manhattan',
+        'chebyshev',
+        'minkowski',
+        'canberra',
+        'braycurtis',
+        'mahalanobis',
+        'wminkowski',
+        'seuclidean',
+        'cosine',
+        'correlation'
+    ])
+    n_neighbors = st.slider('N Neighbors',
+                            min_value=2,
+                            max_value=200,
+                            value=15,
+                            step=1)
+    min_dist = st.slider('Minimum Distance',
+                            min_value=0.0,
+                            max_value=1.0,
+                            value=0.1,
+                            step=0.01)
+        
+    model = UMAP(n_components=3,
+                 n_neighbors=n_neighbors,
+                 min_dist=min_dist,
+                 metric=metric)
+    
+    indices = np.random.choice(len(feats), n_samples, replace=False)
+    results = model.fit_transform(feats[indices, :])
+    
+    return results, indices
     
 
 def vae(feats, n_samples):
@@ -71,18 +104,20 @@ def vae(feats, n_samples):
 datasets = {'MNIST': mnist}
 algorithms = {'PCA': pca,
               'KPCA': kpca,
-              't-SNE': tsne}
+              't-SNE': tsne,
+              'UMAP': umap}
 
 ds_opt = st.selectbox('Select a dataset:', list(datasets.keys()))
 algo_opt = st.selectbox('Select an algorithm:', list(algorithms.keys()))
 
+
 feats, labels = datasets[ds_opt]()
 
 n_samples = st.slider('Number of Samples', 
-                      min_value=0, 
+                      min_value=500, 
                       max_value=len(feats), 
                       value=min(2500, len(feats)), 
-                      step=1)
+                      step=500)
 
 results, indices = algorithms[algo_opt](feats, n_samples)
 
