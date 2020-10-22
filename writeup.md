@@ -22,4 +22,4 @@ In the machine learning part, our goal is to examine if we can separate differen
 
 ## Development
 
-In this project, Jingyuan Li is in charge of Map Visualization and Chart Visualization while Chuhan Feng is in charge of Machine Learning Visualization. We build a general framework for our application and we work on our parts separately during the development. In the end, we integrate all the code together. For the Map Visualization and Chart Visualization sections, it took 40-50 hours in total to develop our application. Most of the time spent is to find the best way to find appropriate expressions and make the charts easy-to-read. 
+In this project, Jingyuan Li is in charge of Map Visualization and Chart Visualization while Chuhan Feng is in charge of Machine Learning Visualization. We build a general framework for our application and we work on our parts separately during the development. In the end, we integrate all the code together. In total, it takes ~50  hours to finish the project. Most of the time spent is to find the appropriate way to express the information in the graph and make the charts readable.
