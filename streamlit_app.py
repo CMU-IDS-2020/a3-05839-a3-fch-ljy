@@ -5,6 +5,9 @@ import random
 import pydeck as pdk
 import datetime
 import altair as alt
+import sklearn
+import sodapy
+import plotly
 
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.manifold import TSNE
