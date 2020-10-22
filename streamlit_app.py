@@ -5,12 +5,11 @@ import random
 import pydeck as pdk
 import datetime
 import altair as alt
-import plotly.express as px
 
 from sodapy import Socrata
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.manifold import TSNE
-
+import plotly.express as px
 
 global_hour = -1
 
@@ -383,6 +382,6 @@ def main_chicago():
         visualize_chart(selected_data)
     if 'Machine Learning' in visualization_type:
         visualize_ml(selected_data)
-        
+
 if __name__ == '__main__':
     main_chicago()
