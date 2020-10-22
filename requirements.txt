@@ -2,8 +2,7 @@ streamlit
 pandas
 altair
 pydect
-pipreqs
 sodapy
-scikit-learn
+Python3-sklearn
 plotly
 numpy
