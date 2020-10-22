@@ -5,3 +5,8 @@ umap-learn
 scikit-learn
 tensorflow
 keras
+pydect
+sodapy
+sklearn
+plotly
+numpy
