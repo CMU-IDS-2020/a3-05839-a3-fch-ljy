@@ -190,7 +190,7 @@ def visualize_chart(selected_data):
                 brush
             )
     
-    chart_main = base.mark_area(filled=False).encode(x='Hour:N',
+    chart_main = base.mark_area(filled=True).encode(x='Hour:N',
                                          y='count(Case Number):Q',
                                          color=alt.Color('Primary Type:N')).properties(
                                              title="Hourly Trend of Crime Types (Drag to Select)",
@@ -210,12 +210,12 @@ def visualize_chart(selected_data):
                 y=alt.Y('count(Case Number):Q'),
                 color=alt.condition(
                     selector_loc,
-                    'Location Description:N',
+                    'Primary Type:N',
                     alt.value('lightgray')
                 ),
             ).properties(
                 title="Location Distribution (Click to Select)",
-                width=800,
+                width=700,
                 height=400
             ).add_selection(
                 selector_loc
@@ -225,10 +225,11 @@ def visualize_chart(selected_data):
                 selector_type
             )
     st.altair_chart(alt.vconcat(two_chart, chart_location))
+    
 
-def visualize_map(data):
+def visualize_map(data, crime_list = ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NARCOTICS', 'ASSAULT', 'OTHER']):
     st.header("Map Visualization")
-    options = st.multiselect("Map Visualization", ['HeatMap', 'ScatterPlot', 'Hexagon'], default=['ScatterPlot'])
+    options = st.multiselect("Map Visualization", ['HeatMap', 'ScatterPlot', 'Hexagon'], default=['ScatterPlot', 'Hexagon'])
     view_in_hour = st.checkbox("View Single Hour")
     global global_hour
     if view_in_hour:
@@ -261,11 +262,11 @@ def visualize_map(data):
         separate_types_of_crime = st.checkbox("Separate Crimes")
         if separate_types_of_crime:
             i = 0
-            for crime in ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NARCOTICS', 'ASSAULT', 'OTHER']:
+            for crime in crime_list:
                 if crime != 'OTHER':
                     crime_data = selected_data[selected_data.loc[:,'Primary Type']==crime]
                 else:
-                    target_list = ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NARCOTICS', 'ASSAULT']
+                    target_list = crime_list[:-1]
                     crime_data = selected_data[selected_data.loc[:,'Primary Type'].apply(lambda x:x not in target_list)]
                 layer = pdk.Layer(
                     'ScatterplotLayer',    
@@ -308,19 +309,25 @@ def main_chicago():
     year = st.sidebar.slider('Year', 2001, 2020, value=2020)
     num_of_samples = st.sidebar.slider('Total Case Number', 2000, 100000, value=10000, step=2000)
     data_cache = st.cache(read_data)
-    results = data_cache(year)
+    results = data_cache(year, 'online')
     selected_data = random_select(results, num_of_samples)
     selected_data = add_extra_columns(selected_data)
     
     #Detailed Selection
-    crimetype = st.sidebar.multiselect('Crime Type', ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NARCOTICS', 'ASSAULT', 'OTHER'], default = [])
-    location = st.sidebar.multiselect('Location', ['STREET','RESIDENCE','SIDEWALK', 'ALLEY', 'SCHOOL, PUBLIC, BUILDING', 'PARKING LOT/GARAGE(NON.RESID.)', 'OTHER'], default = [])
+    location_list = list(selected_data.groupby('Location Description').agg('count').sort_values('Case Number', ascending = False).index)
+    location_list = location_list[:15]+['OTHER']
+    
+    crime_list = list(selected_data.groupby('Primary Type').agg('count').sort_values('Case Number', ascending = False).index)
+    crime_list = crime_list[:10]+['OTHER']
+    
+    crimetype = st.sidebar.multiselect('Crime Type', crime_list, default = crime_list[:-5])
+    location = st.sidebar.multiselect('Location', location_list, default = location_list[:-1])
     month = st.sidebar.selectbox('Month', ['All Month'] +list(range(1,12)))
     if crimetype != []:
         if 'OTHER' not in crimetype:
             selected_data = selected_data[selected_data.loc[:,'Primary Type'].apply(lambda x:x in crimetype)]
         else:
-            target_list = ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NARCOTICS', 'ASSAULT', 'OTHER']
+            target_list = crime_list
             for crime in crimetype:
                 target_list.remove(crime)
             selected_data = selected_data[selected_data.loc[:,'Primary Type'].apply(lambda x:x not in target_list)]
@@ -329,7 +336,7 @@ def main_chicago():
         if 'OTHER' not in location:
             selected_data = selected_data[selected_data.loc[:,'Location Description'].apply(lambda x:x in location)]
         else:
-            target_list = ['STREET','RESIDENCE','SIDEWALK', 'ALLEY', 'SCHOOL, PUBLIC, BUILDING', 'PARKING LOT/GARAGE(NON.RESID.)', 'OTHER']
+            target_list = location_list
             for loc in location:
                 target_list.remove(loc)
             selected_data = selected_data[selected_data.loc[:,'Location Description'].apply(lambda x:x not in target_list)]
@@ -338,9 +345,9 @@ def main_chicago():
     selected_data = selected_data.reset_index().iloc[:,1:]
     st.subheader('Selected Data')
     st.write(selected_data)
-    visualization_type = st.multiselect('Select the way you want to explore the data', ['Visualize In A Map', 'Explore In Charts', 'Machine Learning'], default=['Explore In Charts'])
+    visualization_type = st.multiselect('Select the way you want to explore the data', ['Explore In Charts', 'Visualize In A Map', 'Machine Learning'], default = ['Visualize In A Map'])
     if 'Visualize In A Map' in visualization_type:
-        visualize_map(selected_data)
+        visualize_map(selected_data, crime_list)
     if 'Explore In Charts' in visualization_type:
         visualize_chart(selected_data)
     if 'Machine Learning' in visualization_type:
