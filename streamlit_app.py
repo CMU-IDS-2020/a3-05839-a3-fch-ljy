@@ -173,7 +173,7 @@ def visualize_chart(selected_data):
             width=300,
             height=300
         )
-    
+
     points = base.mark_bar(filled=True).encode(
             x=alt.X('Primary Type:N', sort=alt.EncodingSortField(field="Case Number", op="count", order='descending'),),
             y=alt.Y('count(Case Number):Q'),
@@ -216,7 +216,7 @@ def visualize_chart(selected_data):
             ).properties(
                 title="Location Distribution (Click to Select)",
                 width=700,
-                height=400
+                height=200
             ).add_selection(
                 selector_loc
             ).transform_filter(
@@ -224,7 +224,35 @@ def visualize_chart(selected_data):
             ).transform_filter(
                 selector_type
             )
-    st.altair_chart(alt.vconcat(two_chart, chart_location))
+    
+    background = alt.Chart().mark_geoshape(
+                    fill='lightgray',
+                    stroke='white'
+                ).properties(
+                    width=700,
+                    height=400
+                )
+        
+    geo_chart = base.mark_circle(
+            size=10
+        ).encode(
+            longitude='Longitude:Q',
+            latitude='Latitude:Q',
+            color='Primary Type:N',
+            tooltip=['Date', 'Block', 'Primary Type', 'Description', 'Location Description']
+        ).properties(
+                title="Geography Distribution",
+                width=700,
+                height=400
+        ).transform_filter(
+            selector_loc
+        ).transform_filter(
+            brush
+        ).transform_filter(
+            selector_type
+        )
+        
+    st.altair_chart(alt.vconcat(two_chart, chart_location, background + geo_chart))
     
 
 def visualize_map(data, crime_list = ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NARCOTICS', 'ASSAULT', 'OTHER']):
@@ -345,7 +373,7 @@ def main_chicago():
     selected_data = selected_data.reset_index().iloc[:,1:]
     st.subheader('Selected Data')
     st.write(selected_data)
-    visualization_type = st.multiselect('Select the way you want to explore the data', ['Explore In Charts', 'Visualize In A Map', 'Machine Learning'], default = ['Visualize In A Map'])
+    visualization_type = st.multiselect('Select the way you want to explore the data', ['Explore In Charts', 'Visualize In A Map', 'Machine Learning'], default = ['Explore In Charts'])
     if 'Visualize In A Map' in visualization_type:
         visualize_map(selected_data, crime_list)
     if 'Explore In Charts' in visualization_type:
