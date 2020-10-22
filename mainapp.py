@@ -181,7 +181,7 @@ def visualize_chart(selected_data):
                                 'Primary Type:N',
                                 alt.value('lightgray')),
             ).properties(
-                    title="Total Crime Numbers",
+                    title="Total Crime Numbers (Click to Select)",
             ).add_selection(
                 selector_type
             ).transform_filter(
@@ -193,7 +193,7 @@ def visualize_chart(selected_data):
     chart_main = base.mark_area(filled=False).encode(x='Hour:N',
                                          y='count(Case Number):Q',
                                          color=alt.Color('Primary Type:N')).properties(
-                                             title="Hourly Trend of Crime Types",
+                                             title="Hourly Trend of Crime Types (Drag to Select)",
                                              ).add_selection(
                                                  brush
                                              ).transform_filter(
@@ -214,13 +214,13 @@ def visualize_chart(selected_data):
                     alt.value('lightgray')
                 ),
             ).properties(
-                title="Location Distribution",
+                title="Location Distribution (Click to Select)",
                 width=800,
                 height=400
             ).add_selection(
                 selector_loc
             ).transform_filter(
-                brush # good here
+                brush
             ).transform_filter(
                 selector_type
             )
