@@ -3,6 +3,6 @@ pandas
 altair
 pydect
 sodapy
-sklearn
+scikit-learn
 plotly
 numpy
