@@ -6,9 +6,9 @@ import pydeck as pdk
 import datetime
 import altair as alt
 
-from sodapy import Socrata
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.manifold import TSNE
+from sodapy import Socrata
 import plotly.express as px
 
 global_hour = -1
