@@ -28,7 +28,7 @@ def kpca(feats, indices):
     model = KernelPCA(n_components=3, kernel=kernel)
     results = model.fit_transform(feats[indices, :])
     
-    return results, indices
+    return results
 
 
 def isomap(feats, indices):
