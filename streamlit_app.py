@@ -393,7 +393,11 @@ def main_dim_reduce():
     ds_opt = st.sidebar.selectbox('Please select a dataset:', list(datasets.keys()))
     
     st.title(f'Dimentionality Reduction For {ds_opt}')
-    
+    st.markdown('''
+                In this part, you can the dimension reduction algorithms individually.
+                This part will use a separate dataset for you to explore the dimension
+                reduction techniques more comprehensively. 
+                ''')
     feats, labels, raw = datasets[ds_opt]()
     
     n_samples = st.sidebar.slider('Number of Samples', 
