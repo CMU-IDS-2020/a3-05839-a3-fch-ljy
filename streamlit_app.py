@@ -395,7 +395,7 @@ def main_dim_reduce():
     
     st.title(f'Dimentionality Reduction For {ds_opt}')
     st.markdown('''
-                In this part, you can the dimension reduction algorithms individually.
+                In this part, you can the explore dimension reduction algorithms individually.
                 This part will use a separate dataset for you to explore the dimension
                 reduction techniques more comprehensively. 
                 ''')
@@ -404,7 +404,7 @@ def main_dim_reduce():
     n_samples = st.sidebar.slider('Number of Samples', 
                           min_value=500, 
                           max_value=len(feats), 
-                          value=min(1000, len(feats)), 
+                          value=min(500, len(feats)), 
                           step=500)
 
     algo_opt = st.sidebar.selectbox('Please select an algorithm:', list(algorithms.keys()), index=4)
