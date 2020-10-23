@@ -112,7 +112,7 @@ def ae(feats, indices):
     
     feat_max = np.max(feats)
     
-    st.write(feat.shape)
+    st.write(feats.shape)
     
     inputs = keras.Input(shape=(784,))
     hidden1 = layers.Dense(hidden_size, activation=activation)(inputs)
