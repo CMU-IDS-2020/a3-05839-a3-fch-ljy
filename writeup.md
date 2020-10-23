@@ -2,7 +2,11 @@
 
 ![A screenshot of your application. Could be a GIF.](main.png)
 
-In this project, we would like to explore the pattens of criminal actions happening in Chicago through visualization methods. The dataset we use here is the Chicago Crime Dataset, and this dataset contains information about the crimes happened in Chicago in the past 20 years. In specific, we will focus on the data in 2020.
+In this project, we would like to explore the pattens of criminal actions happening in Chicago through visualization methods. 
+
+## Dataset
+
+The dataset we use here is the Chicago Crime Dataset, provided in https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-present-Dashboard/5cd6-ry5g. This dataset contains information about the criminal records that happened in Chicago in the past 20 years. The reason we choose this dataset is due to its great practical meanings that allow us to gain some knowledge about the public security conditions in the city and help reduce the chance to be involved by predictively analyze the crime distributions. 
 
 ## Project Goals
 
@@ -22,4 +26,4 @@ In the machine learning part, our goal is to examine if we can separate differen
 
 ## Development
 
-In this project, Jingyuan Li is in charge of Map Visualization and Chart Visualization while Chuhan Feng is in charge of Machine Learning Visualization. We build a general framework for our application and we work on our parts separately during the development. In the end, we integrate all the code together. For the Map Visualization and Chart Visualization sections, it took 40-50 hours in total to develop our application. Most of the time spent is to find the best way to find appropriate expressions and make the charts easy-to-read. 
+In this project, Jingyuan Li is in charge of Map Visualization and Chart Visualization while Chuhan Feng is in charge of Machine Learning Visualization. We build a general framework for our application and we work on our parts separately during the development. In the end, we integrate all the code together. In total, it takes ~50  hours to finish the project. Most of the time spent is to find the appropriate way to express the information in the graph and make the charts readable.

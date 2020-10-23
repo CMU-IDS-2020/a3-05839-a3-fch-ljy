@@ -110,6 +110,13 @@ def preprocess_data(data):
     return data.iloc[:,0], np.array(data.iloc[:,1:])
     
 def visualize_ml(selected_data):
+    help_selected = st.checkbox('help')
+    if help_selected:
+        st.markdown('''
+                    In this part, you can explore the data after dimension reduction.
+                    You can see whether the points is separable, which would then decides
+                    if we can use machinelearning to make prediction.
+                    ''')
     labels, feats = preprocess_data(selected_data)
     algorithms = {'PCA': pca,
                   'KPCA': kpca,
@@ -141,7 +148,16 @@ def visualize_ml(selected_data):
 
 def visualize_chart(selected_data):
     st.header("Chart Visualization")
-    
+    help_selected = st.checkbox('help')
+    if help_selected:
+        st.markdown('''
+                    In this part, you can explore the distribution of the crimes in a charts.
+                    Here we provides 4 different charts for you to gain information.
+                    In the chart for crime types, locations, and hourly trends,
+                    you can select/drag to select the data you want to examine.
+                    In the Map, you can view the distributions of the selected points, 
+                    and see the details of each records.
+                    ''')
     selector_type = alt.selection_single(empty='all', fields=['Primary Type'])
     selector_loc = alt.selection_single(empty='all', fields=['Location Description'])
     brush = alt.selection(type='interval')
@@ -233,6 +249,14 @@ def visualize_chart(selected_data):
 
 def visualize_map(data, crime_list = ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NARCOTICS', 'ASSAULT', 'OTHER']):
     st.header("Map Visualization")
+    help_selected = st.checkbox('help')
+    if help_selected:
+        st.markdown('''
+                    In this part, you can explore the distribution of the crimes in a real world map.
+                    In specifc, you might want to view the crime distributions in each single hour, or you might view the distribution of each kind of crime separately.
+                    Here we provide Heatmap, ScatterPlot, and Hexagon to help visualize the distribution of crimes.
+                    You can zoom in/out to view the map in different detail level.
+                    ''')
     options = st.multiselect("Visualization Type", ['HeatMap', 'ScatterPlot', 'Hexagon'], default=['ScatterPlot', 'Hexagon'])
     view_in_hour = st.checkbox("View In Single Hour")
     global global_hour
