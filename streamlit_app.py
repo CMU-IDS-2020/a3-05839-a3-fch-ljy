@@ -400,7 +400,7 @@ def main_dim_reduce():
     n_samples = st.sidebar.slider('Number of Samples', 
                           min_value=500, 
                           max_value=len(feats), 
-                          value=min(2500, len(feats)), 
+                          value=min(1000, len(feats)), 
                           step=500)
 
     algo_opt = st.sidebar.selectbox('Please select an algorithm:', list(algorithms.keys()), index=4)

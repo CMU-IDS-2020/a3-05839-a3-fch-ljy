@@ -2,11 +2,15 @@
 
 ![A screenshot of your application. Could be a GIF.](main.png)
 
-In this project, we would like to explore the pattens of criminal actions happening in Chicago through visualization methods. 
+In this project, we would like to explore two ways of interactive data visualization, which includes visualization by charts and visualization by dimension reduction. We have chosen two different types of datasets, one made up of discrete features, the other contains only continuous features. For the discrete feature dataset, we specifically chose Chicago Crime dataset, and we hope to explore the pattens of criminal actions happening in Chicago through visualization methods. For the continuous feature dataset, we selected MNIST dataset, and we hope to explore the structure of the data using different dimensionality reduction techniques. 
 
 ## Dataset
 
-The dataset we use here is the Chicago Crime Dataset, provided in https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-present-Dashboard/5cd6-ry5g. This dataset contains information about the criminal records that happened in Chicago in the past 20 years. The reason we choose this dataset is due to its great practical meanings that allow us to gain some knowledge about the public security conditions in the city and help reduce the chance to be involved by predictively analyze the crime distributions. 
+* Chicago Crime Dataset
+This dataset is provided in https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-present-Dashboard/5cd6-ry5g. This dataset contains information about the criminal records that happened in Chicago in the past 20 years. The reason we choose this dataset is due to its great practical meanings that allow us to gain some knowledge about the public security conditions in the city and help reduce the chance to be involved by predictively analyze the crime distributions. 
+
+* MNIST Dataset
+As provided in http://yann.lecun.com/exdb/mnist/, this dataset contains 70000 greyscale images of hand written digits. Each image contains 784 pixel values. This dataset usually serves as the "hello world" example in the field of machine learning, and it's also very suitable for experimenting with high-dimensional data visualization. 
 
 ## Project Goals
 

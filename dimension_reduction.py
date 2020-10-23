@@ -16,8 +16,8 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 def pca(feats, indices):
-    model = PCA(n_components=3).fit(feats)
-    results = model.transform(feats[indices, :])
+    model = PCA(n_components=3)
+    results = model.fit_transform(feats[indices, :])
     
     return results
 
