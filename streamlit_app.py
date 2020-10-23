@@ -383,7 +383,7 @@ def main_chart():
         visualize_ml(selected_data)
 
 def main_dim_reduce():
-    datasets = {'MNIST': mnist}
+    datasets = {'MNIST': mnist_csv}
     algorithms = {'PCA': pca,
                   'KPCA': kpca,
                   'Isomap': isomap,
