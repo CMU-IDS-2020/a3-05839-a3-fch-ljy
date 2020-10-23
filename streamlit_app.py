@@ -115,15 +115,15 @@ def visualize_ml(selected_data):
         st.markdown('''
                     In this part, you can explore the data after dimension reduction.
                     You can see whether the points is separable, which would then decides
-                    if we can use machinelearning to make prediction.
+                    if we can use machine learning algorithms to make prediction. 
+                    If the points are mixed together, you might try to reduce the number of crime types in the general setting panel.
                     ''')
     labels, feats = preprocess_data(selected_data)
     algorithms = {'PCA': pca,
                   'KPCA': kpca,
                   'Isomap': isomap,
                   't-SNE': tsne,
-                  'UMAP': umap,
-                  'Autoencoder': ae}
+                  'UMAP': umap}
     
     algo_opt = st.selectbox('Select an algorithm:', list(algorithms.keys()))
     
@@ -394,7 +394,11 @@ def main_dim_reduce():
     ds_opt = st.sidebar.selectbox('Please select a dataset:', list(datasets.keys()))
     
     st.title(f'Dimentionality Reduction For {ds_opt}')
-    
+    st.markdown('''
+                In this part, you can the dimension reduction algorithms individually.
+                This part will use a separate dataset for you to explore the dimension
+                reduction techniques more comprehensively. 
+                ''')
     feats, labels, raw = datasets[ds_opt]()
     
     n_samples = st.sidebar.slider('Number of Samples', 
