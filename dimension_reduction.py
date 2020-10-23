@@ -15,33 +15,30 @@ from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 
-def pca(feats, n_samples):
+def pca(feats, indices):
     model = PCA(n_components=3).fit(feats)
-    indices = np.random.choice(len(feats), n_samples, replace=False)
     results = model.transform(feats[indices, :])
     
-    return results, indices
+    return results
 
 
-def kpca(feats, n_samples):
+def kpca(feats, indices):
     kernel = st.selectbox('Kernel', ['linear', 'poly', 'rbf', 'cosine'])
     
     model = KernelPCA(n_components=3, kernel=kernel)
-    indices = np.random.choice(len(feats), n_samples, replace=False)
     results = model.fit_transform(feats[indices, :])
     
     return results, indices
 
 
-def isomap(feats, n_samples):
+def isomap(feats, indices):
     model = Isomap(n_components=3)
-    indices = np.random.choice(len(feats), n_samples, replace=False)
     results = model.fit_transform(feats[indices, :])
     
-    return results, indices
+    return results
 
 
-def tsne(feats, n_samples):
+def tsne(feats, indices):
     perplexity = st.slider('Perplexity',
                            min_value=5,
                            max_value=50,
@@ -55,13 +52,12 @@ def tsne(feats, n_samples):
                  perplexity=perplexity, 
                  method='barnes_hut',
                  angle=1)
-    indices = np.random.choice(len(feats), n_samples, replace=False)
     results = model.fit_transform(feats[indices, :])
     
-    return results, indices
+    return results
 
 
-def umap(feats, n_samples):
+def umap(feats, indices):
     metric = st.selectbox('Metric', [
         'euclidean',
         'manhattan',
@@ -91,13 +87,12 @@ def umap(feats, n_samples):
                  min_dist=min_dist,
                  metric=metric)
     
-    indices = np.random.choice(len(feats), n_samples, replace=False)
     results = model.fit_transform(feats[indices, :])
     
-    return results, indices
+    return results
     
 
-def ae(feats, n_samples):
+def ae(feats, indices):
     hidden_size = st.slider('Hidden Size',
                             min_value=3,
                             max_value=feats.shape[1],
@@ -133,7 +128,6 @@ def ae(feats, n_samples):
                     batch_size=2048,
                     shuffle=True)
     
-    indices = np.random.choice(len(feats), n_samples, replace=False)
     results = encoder.predict(feats[indices, :] / feat_max)
    
-    return results, indices
+    return results

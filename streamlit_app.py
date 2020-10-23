@@ -113,7 +113,10 @@ def visualize_ml(selected_data):
     labels, feats = preprocess_data(selected_data)
     algorithms = {'PCA': pca,
                   'KPCA': kpca,
-                  't-SNE': tsne}
+                  'Isomap': isomap,
+                  't-SNE': tsne,
+                  'UMAP': umap,
+                  'Autoencoder': ae}
     
     algo_opt = st.selectbox('Select an algorithm:', list(algorithms.keys()))
     
@@ -123,7 +126,8 @@ def visualize_ml(selected_data):
                           max_value=len(feats), 
                           value=min(2500, len(feats)), 
                           step=1)
-    results, indices = algorithms[algo_opt](feats, n_samples)
+    indices = np.arange(n_samples)
+    results = algorithms[algo_opt](feats, indices)
 
     reduced = pd.DataFrame(results, columns=['x', 'y', 'z'])
     reduced_labels = labels.iloc[list(indices)].reset_index().iloc[:,1]
@@ -344,7 +348,7 @@ def main_chart():
     if month != 'All Month':
         selected_data = selected_data[selected_data.loc[:,'Month']==month]
     selected_data = selected_data.reset_index().iloc[:,1:]
-    st.subheader('Selected Data')
+    st.subheader('Raw Data')
     st.write(selected_data)
     visualization_type = st.multiselect('Select the way you want to explore the data', ['Explore In Charts', 'Visualize In A Map', 'Machine Learning'], default = ['Explore In Charts'])
     if 'Visualize In A Map' in visualization_type:
@@ -355,8 +359,6 @@ def main_chart():
         visualize_ml(selected_data)
 
 def main_dim_reduce():
-    st.title('Dimentionality Reduction')
-
     datasets = {'MNIST': mnist}
     algorithms = {'PCA': pca,
                   'KPCA': kpca,
@@ -366,19 +368,28 @@ def main_dim_reduce():
                   'Autoencoder': ae}
 
     ds_opt = st.sidebar.selectbox('Please select a dataset:', list(datasets.keys()))
-    algo_opt = st.sidebar.selectbox('Please select an algorithm:', list(algorithms.keys()))
-
-
-    feats, labels = datasets[ds_opt]()
-
+    
+    st.title(f'Dimentionality Reduction For {ds_opt}')
+    
+    feats, labels, raw = datasets[ds_opt]()
+    
     n_samples = st.sidebar.slider('Number of Samples', 
                           min_value=500, 
                           max_value=len(feats), 
                           value=min(2500, len(feats)), 
                           step=500)
 
-    results, indices = algorithms[algo_opt](feats, n_samples)
+    algo_opt = st.sidebar.selectbox('Please select an algorithm:', list(algorithms.keys()), index=4)
 
+    st.subheader('Raw Data')
+    indices = np.random.choice(len(feats), n_samples, replace=False)
+    raw_data = raw.drop('class', axis='columns').iloc[indices, :]
+    raw_data.insert(0, 'class', labels[indices])
+    st.write(raw_data)
+    
+    results = algorithms[algo_opt](feats, indices)
+
+    
     reduced = pd.DataFrame(results, columns=['x', 'y', 'z'])
     reduced['class'] = labels[indices]
 
