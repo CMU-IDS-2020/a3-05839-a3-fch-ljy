@@ -16,7 +16,7 @@ As provided in http://yann.lecun.com/exdb/mnist/, this dataset contains 70000 gr
 
 For the first part, the general goal of our application is to explore the patterns of criminal actions happening in Chicago through visualization, statistic, and machine learning elements. In specific, we would like to explore the relationships between crime frequency, crime type, location, area in the city as well as times of the day. For example, in this application, we can discover when and where a specific kind of crime is most likely to happen, and what time of a day does each kind of crime happen most. From the aspect of an individual, our application might help to figure out the potentially dangerous area at different times of a day to reduce the chance of being harmed. Besides, we would like to explore the possibility to predictively figure out the type of crimes given other elements through dimensionality reduction methods.
 
-For the second part, the general goal is to 
+For the second part, the general goal is to visualize the underlaying structure of the high-dimentional image data by reducing the dimensionality to 3. In this way, we will be able to explore and analysis the relationship between differen clusters in a interactive 3D scatter plot. In order to find the best way to reduce data dimensionality, we will provide options of several different dimensionality reduction algorithms for comparison. Moreover, the hyper-parameters for each algorithm are interactivelly configurable, which can be used to compare and find the best hyper-parameter settings in order to generate the best dimension reduction results.
 
 ## Design
 
@@ -32,4 +32,4 @@ In the machine learning part, our goal is to examine if we can separate differen
 
 ## Development
 
-In this project, Jingyuan Li is in charge of Map Visualization and Chart Visualization while Chuhan Feng is in charge of Machine Learning Visualization. We build a general framework for our application and we work on our parts separately during the development. In the end, we integrate all the code together. In total, it takes ~50  hours to finish the project. Most of the time spent is to find the appropriate way to express the information in the graph and make the charts readable.
+In this project, Jingyuan Li is in charge of Map Visualization and Chart Visualization while Chuhan Feng is in charge of Dimensionality Reduction Visualization. We build a general framework for our application and we work on our parts separately during the development. In the end, we integrate all the code together. In total, it takes ~50  hours to finish the project. Most of the time spent is to find the appropriate way to express the information in the graph and make the charts readable.
