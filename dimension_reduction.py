@@ -125,7 +125,7 @@ def ae(feats, indices):
     autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
     autoencoder.fit(feats / feat_max, feats / feat_max,
                     epochs=n_epochs,
-                    batch_size=2048,
+                    batch_size=256,
                     shuffle=True)
     
     results = encoder.predict(feats[indices, :] / feat_max)
