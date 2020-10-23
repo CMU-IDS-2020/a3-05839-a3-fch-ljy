@@ -5,11 +5,17 @@ import random
 import pydeck as pdk
 import datetime
 import altair as alt
-import plotly.express as px
+import sklearn
+import sodapy
+import plotly
 
-from sodapy import Socrata
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.manifold import TSNE
+from sodapy import Socrata
+import plotly.express as px
+
+from datasets import *
+from dimension_reduction import *
 
 
 global_hour = -1
@@ -36,41 +42,6 @@ def get_one_hot(ds):
     one_hot = pd.DataFrame(data_dict)
     return one_hot
     # return one_hot
-
-def pca(feats, n_samples):
-    model = PCA(n_components=3).fit(feats)
-    indices = np.random.choice(len(feats), n_samples, replace=False)
-    results = model.transform(feats[indices, :])
-    
-    return results, indices
-
-def kpca(feats, n_samples):
-    kernel = st.selectbox('Kernel', ['linear', 'poly', 'rbf', 'cosine'])
-    
-    model = KernelPCA(n_components=3, kernel=kernel)
-    indices = np.random.choice(len(feats), n_samples, replace=False)
-    results = model.fit_transform(feats[indices, :])
-    
-    return results, indices
-
-def tsne(feats, n_samples):
-    perplexity = st.slider('Perplexity',
-                           min_value=5,
-                           max_value=50,
-                           value=30,
-                           step=1)
-    
-    model = TSNE(n_components=3, 
-                 n_iter=500,
-                 n_iter_without_progress=100,
-                 early_exaggeration=20,
-                 perplexity=perplexity, 
-                 method='barnes_hut',
-                 angle=1)
-    indices = np.random.choice(len(feats), n_samples, replace=False)
-    results = model.fit_transform(feats[indices, :])
-    
-    return results, indices
 
 @st.cache(suppress_st_warning=True)
 def read_data(year, mode='offline'):
@@ -329,12 +300,11 @@ def visualize_map(data, crime_list = ['THEFT','BATTERY', 'CRIMINAL DAMAGE', 'NAR
     deck = deck_cache(map_style='mapbox://styles/mapbox/light-v9',layers=layers, initial_view_state=view_state)
     st.pydeck_chart(deck)
 
-def main_chicago():
+def main_chart():
     
     st.title("Exploring the Pattern of Chicago Crimes")
     
     #General data selection and preprocessing
-    st.sidebar.title("General Settings")
     year = st.sidebar.slider('Year', 2001, 2020, value=2020)
     st.sidebar.write("Year Value Will Be Fixed Here (2020)")
     year = 2020
@@ -383,4 +353,51 @@ def main_chicago():
         visualize_chart(selected_data)
     if 'Machine Learning' in visualization_type:
         visualize_ml(selected_data)
-main_chicago()
+
+def main_dim_reduce():
+    st.title('Dimentionality Reduction')
+
+    datasets = {'MNIST': mnist}
+    algorithms = {'PCA': pca,
+                  'KPCA': kpca,
+                  'Isomap': isomap,
+                  't-SNE': tsne,
+                  'UMAP': umap,
+                  'Autoencoder': ae}
+
+    ds_opt = st.sidebar.selectbox('Please select a dataset:', list(datasets.keys()))
+    algo_opt = st.sidebar.selectbox('Please select an algorithm:', list(algorithms.keys()))
+
+
+    feats, labels = datasets[ds_opt]()
+
+    n_samples = st.sidebar.slider('Number of Samples', 
+                          min_value=500, 
+                          max_value=len(feats), 
+                          value=min(2500, len(feats)), 
+                          step=500)
+
+    results, indices = algorithms[algo_opt](feats, n_samples)
+
+    reduced = pd.DataFrame(results, columns=['x', 'y', 'z'])
+    reduced['class'] = labels[indices]
+
+    fig = px.scatter_3d(reduced, x='x', y='y', z='z', color='class', opacity=1)
+    fig.update_layout(autosize=False,
+                      width=700,
+                      height=800)
+
+    st.plotly_chart(fig)
+        
+        
+def main():
+    st.sidebar.title("Settings")
+    dataset = st.sidebar.selectbox('Please select a task:', ['Chart Exploration', 'Dimensionality Reduction'])
+    if dataset == 'Chart Exploration':
+        main_chart()
+    elif dataset == 'Dimensionality Reduction':
+        main_dim_reduce()
+
+
+if __name__ == '__main__':
+    main()

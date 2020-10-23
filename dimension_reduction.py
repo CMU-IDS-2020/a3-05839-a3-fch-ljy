@@ -5,22 +5,14 @@ import openml
 import plotly.express as px
 import plotly.graph_objects as go
 
+import keras
+from keras import layers
+from keras import activations
 from sklearn.decomposition import PCA, KernelPCA
-from sklearn.manifold import TSNE
+from sklearn.manifold import TSNE, Isomap
 from umap import UMAP
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-
-
-st.title('Dimentionality Reduction')
-
-
-def mnist():
-    mnist = openml.datasets.get_dataset('mnist_784')
-    x, y, categorical, attribute_names = mnist.get_data()
-    feats = x.drop('class', axis='columns').to_numpy().astype('float32')
-    labels = x['class'].to_numpy()
-    return feats, labels
 
 
 def pca(feats, n_samples):
@@ -35,6 +27,14 @@ def kpca(feats, n_samples):
     kernel = st.selectbox('Kernel', ['linear', 'poly', 'rbf', 'cosine'])
     
     model = KernelPCA(n_components=3, kernel=kernel)
+    indices = np.random.choice(len(feats), n_samples, replace=False)
+    results = model.fit_transform(feats[indices, :])
+    
+    return results, indices
+
+
+def isomap(feats, n_samples):
+    model = Isomap(n_components=3)
     indices = np.random.choice(len(feats), n_samples, replace=False)
     results = model.fit_transform(feats[indices, :])
     
@@ -83,7 +83,7 @@ def umap(feats, n_samples):
     min_dist = st.slider('Minimum Distance',
                             min_value=0.0,
                             max_value=1.0,
-                            value=0.1,
+                            value=0.5,
                             step=0.01)
         
     model = UMAP(n_components=3,
@@ -97,36 +97,43 @@ def umap(feats, n_samples):
     return results, indices
     
 
-def vae(feats, n_samples):
-    pass
+def ae(feats, n_samples):
+    hidden_size = st.slider('Hidden Size',
+                            min_value=3,
+                            max_value=feats.shape[1],
+                            value=int(np.sqrt(feats.shape[1])),
+                            step=1)
+    n_epochs = st.slider('Number of Epochs',
+                            min_value=1,
+                            max_value=20,
+                            value=5,
+                            step=1)
+    activation = st.selectbox('Activation', [
+        None,
+        'relu',
+        'sigmoid',
+        'tanh'
+    ], index=1)
     
+    feat_max = np.max(feats)
     
-datasets = {'MNIST': mnist}
-algorithms = {'PCA': pca,
-              'KPCA': kpca,
-              't-SNE': tsne,
-              'UMAP': umap}
-
-ds_opt = st.selectbox('Select a dataset:', list(datasets.keys()))
-algo_opt = st.selectbox('Select an algorithm:', list(algorithms.keys()))
-
-
-feats, labels = datasets[ds_opt]()
-
-n_samples = st.slider('Number of Samples', 
-                      min_value=500, 
-                      max_value=len(feats), 
-                      value=min(2500, len(feats)), 
-                      step=500)
-
-results, indices = algorithms[algo_opt](feats, n_samples)
-
-reduced = pd.DataFrame(results, columns=['x', 'y', 'z'])
-reduced['class'] = labels[indices]
-
-fig = px.scatter_3d(reduced, x='x', y='y', z='z', color='class', opacity=1)
-fig.update_layout(autosize=False,
-                  width=700,
-                  height=800)
-
-st.plotly_chart(fig)
+    inputs = keras.Input(shape=(784,))
+    hidden1 = layers.Dense(hidden_size, activation=activation)(inputs)
+    hidden1_bn1 = layers.BatchNormalization()(hidden1)
+    encoded = layers.Dense(3)(hidden1_bn1)
+    encoded_bn = layers.BatchNormalization()(encoded)
+    hidden2 = layers.Dense(hidden_size, activation=activation)(encoded_bn)
+    hidden2_bn = layers.BatchNormalization()(hidden2)
+    decoded = layers.Dense(784, activation='sigmoid')(hidden2_bn)
+    autoencoder = keras.Model(inputs, decoded)
+    encoder = keras.Model(inputs, encoded_bn)
+    autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
+    autoencoder.fit(feats / feat_max, feats / feat_max,
+                    epochs=n_epochs,
+                    batch_size=2048,
+                    shuffle=True)
+    
+    indices = np.random.choice(len(feats), n_samples, replace=False)
+    results = encoder.predict(feats[indices, :] / feat_max)
+   
+    return results, indices
