@@ -384,12 +384,14 @@ def main_chart():
 
 def main_dim_reduce():
     datasets = {'MNIST': mnist_csv}
-    algorithms = {'PCA': pca,
-                  'KPCA': kpca,
-                  'Isomap': isomap,
-                  't-SNE': tsne,
-                  'UMAP': umap,
-                  'Autoencoder': ae}
+    algorithms = {
+        'PCA': pca,
+        'KPCA': kpca,
+        'Isomap': isomap,
+        't-SNE': tsne,
+        'UMAP': umap,
+#       'Autoencoder': ae
+    }
 
     ds_opt = st.sidebar.selectbox('Please select a dataset:', list(datasets.keys()))
     
