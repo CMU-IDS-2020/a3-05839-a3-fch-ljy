@@ -123,7 +123,7 @@ def ae(feats, indices):
     autoencoder = keras.Model(inputs, decoded)
     encoder = keras.Model(inputs, encoded_bn)
     autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
-    autoencoder.fit(feats / feat_max, feats / feat_max,
+    autoencoder.fit(feats[:784, :] / feat_max, feats[:784, :] / feat_max,
                     epochs=n_epochs,
                     batch_size=256,
                     shuffle=True)
