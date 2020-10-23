@@ -115,7 +115,8 @@ def visualize_ml(selected_data):
         st.markdown('''
                     In this part, you can explore the data after dimension reduction.
                     You can see whether the points is separable, which would then decides
-                    if we can use machinelearning to make prediction.
+                    if we can use machine learning algorithms to make prediction. 
+                    If the points are mixed together, you might try to reduce the number of crime types in the general setting panel.
                     ''')
     labels, feats = preprocess_data(selected_data)
     algorithms = {'PCA': pca,
