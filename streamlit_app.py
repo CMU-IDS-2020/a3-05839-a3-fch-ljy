@@ -122,8 +122,7 @@ def visualize_ml(selected_data):
                   'KPCA': kpca,
                   'Isomap': isomap,
                   't-SNE': tsne,
-                  'UMAP': umap,
-                  'Autoencoder': ae}
+                  'UMAP': umap}
     
     algo_opt = st.selectbox('Select an algorithm:', list(algorithms.keys()))
     
