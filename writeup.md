@@ -14,7 +14,9 @@ As provided in http://yann.lecun.com/exdb/mnist/, this dataset contains 70000 gr
 
 ## Project Goals
 
-The general goal of our application is to explore the patterns of criminal actions happening in Chicago through visualization, statistic, and machine learning elements. In specific, we would like to explore the relationships between crime frequency, crime type, location, area in the city as well as times of the day. For example, in this application, we can discover when and where a specific kind of crime is most likely to happen, and what time of a day does each kind of crime happen most. From the aspect of an individual, our application might help to figure out the potentially dangerous area at different times of a day to reduce the chance of being harmed. Besides, we would like to explore the possibility to predictively figure out the type of crimes given other elements through machine learning methods.
+For the first part, the general goal of our application is to explore the patterns of criminal actions happening in Chicago through visualization, statistic, and machine learning elements. In specific, we would like to explore the relationships between crime frequency, crime type, location, area in the city as well as times of the day. For example, in this application, we can discover when and where a specific kind of crime is most likely to happen, and what time of a day does each kind of crime happen most. From the aspect of an individual, our application might help to figure out the potentially dangerous area at different times of a day to reduce the chance of being harmed. Besides, we would like to explore the possibility to predictively figure out the type of crimes given other elements through dimensionality reduction methods.
+
+For the second part, the general goal is to 
 
 ## Design
 
