@@ -45,6 +45,29 @@ def get_one_hot(ds):
 
 @st.cache(suppress_st_warning=True)
 def read_data(year, mode='offline'):
+    name_map = {"id":'ID',
+        "case_number":'Case Number',
+        "date":'Date',
+        "block":'Block',
+        "iucr":'IUCR',
+        "primary_type":'Primary Type',
+        "description":'Description',
+        "location_description":'Location Description',
+        "arrest":'Arrest',
+        "domestic":'Domestic',
+        "beat":'Beat',
+        "district":'District',
+        "ward":'Ward',
+        "community_area":'Community Area',
+        "fbi_code":'FBI Code',
+        "year":'Year',
+        "updated_on":'Updated On',
+        "x_coordinate":'X Coordinate',
+        "y_coordinate":'Y Coordinate',
+        "latitude":'Latitude',
+        "longitude":'Longitude',
+        "location":'Location'
+    }
     if mode == 'offline':
         try:
             csv_cache = st.cache(pd.read_csv)
@@ -55,21 +78,13 @@ def read_data(year, mode='offline'):
             client = Socrata("data.cityofchicago.org", None)
             results = client.get("ijzp-q8t2", where="year={:d}".format(year), limit=100000)
             results = pd.DataFrame.from_records(results)
-            results.columns = ['ID', 'Case Number', 'Date', 'Block', 'IUCR', 'Primary Type',
-                               'Description', 'Location Description', 'Arrest', 'Domestic', 'Beat',
-                               'District', 'Ward', 'Community Area', 'FBI Code', 'X Coordinate',
-                               'Y Coordinate', 'Year', 'Updated On', 'Latitude', 'Longitude',
-                               'Location']
+            results.columns = [name_map[name] for name in list(results.columns)]
             return results[results.loc[:,'Year']==str(year)]
     else:
         client = Socrata("data.cityofchicago.org", None)
         results = client.get_all("ijzp-q8t2", where="year={:d}".format(year))
         results = pd.DataFrame.from_records(results)
-        results.columns = ['ID', 'Case Number', 'Date', 'Block', 'IUCR', 'Primary Type',
-            'Description', 'Location Description', 'Arrest', 'Domestic', 'Beat',
-            'District', 'Ward', 'Community Area', 'FBI Code', 'X Coordinate',
-            'Y Coordinate', 'Year', 'Updated On', 'Latitude', 'Longitude',
-            'Location']
+        results.columns = [name_map[name] for name in list(results.columns)]
         return results[results.loc[:,'Year']==str(year)]
 
 @st.cache
