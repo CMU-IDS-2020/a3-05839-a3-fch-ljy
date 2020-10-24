@@ -71,7 +71,7 @@ def read_data(year, mode='offline'):
     if mode == 'offline':
         try:
             csv_cache = st.cache(pd.read_csv)
-            results = csv_cache('Crimes.csv')
+            results = csv_cache('https://raw.githubusercontent.com/CMU-IDS-2020/a3-05839-a3-fch-ljy/master/subset.csv')
             return results[results.loc[:,'Year']==year]
         except: # For testing
             st.write('Incomplete Data Readed, Only for testing')
@@ -353,7 +353,7 @@ def main_chart():
     year = 2020
     num_of_samples = st.sidebar.slider('Total Case Number', 2000, 100000, value=10000, step=2000)
     data_cache = st.cache(read_data)
-    results = data_cache(year, 'online')
+    results = data_cache(year)
     selected_data = random_select(results, num_of_samples)
     selected_data = add_extra_columns(selected_data)
     
